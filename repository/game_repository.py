@@ -9,11 +9,11 @@ class GameRepository:
     def __init__(self, connection) -> None:
         self.connection = connection
 
-    def insert_game(self, name, description, price):
+    def insert_game(self, game):
         with self.connection.cursor() as cursor:
             cursor.execute(
-                "INSERT INTO games(name, description, price) VALUES (%s, %s, %s)",
-                (name, description, price),
+                "INSERT INTO games(title, category, description, price) VALUES (%s, %s, %s, %s)",
+                (game.title, game.category, game.description, game.price),
             )
         self.connection.commit()
         self.connection.close()
@@ -21,7 +21,7 @@ class GameRepository:
     def get_games(self):
         games = []
         with self.connection.cursor() as cursor:
-            cursor.execute("SELECT id, name, description, price FROM games")
+            cursor.execute("SELECT title, category, description, price, id FROM games")
             games = [Game(*game_data) for game_data in cursor.fetchall()]
         self.connection.close()
         return games
@@ -30,18 +30,18 @@ class GameRepository:
         game = None
         with self.connection.cursor() as cursor:
             cursor.execute(
-                "SELECT id, name, description, price FROM games WHERE id = %s",
+                "SELECT title, category, description, price, id FROM games WHERE id = %s",
                 id
             )
             game = Game(*cursor.fetchone())
         self.connection.close()
         return game
 
-    def update_game(self, id, name, description, price):
+    def update_game(self, game):
         with self.connection.cursor() as cursor:
             cursor.execute(
-                "UPDATE games SET name = %s, description = %s, price = %s WHERE id = %s",
-                (name, description, price, id)
+                "UPDATE games SET title = %s, category = %s, description = %s, price = %s WHERE id = %s",
+                (game.title, game.category, game.description, game.price, game.id)
             )
         self.connection.commit()
         self.connection.close()

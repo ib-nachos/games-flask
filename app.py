@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, redirect, render_template
 from flask_cors import CORS, cross_origin
 
+from models.game import create_game
 from repository.database import get_connection
 from repository.game_repository import GameRepository
 
@@ -34,10 +35,8 @@ def games():
 @cross_origin()
 def save_game():
     data = request.get_json()
-    name = data["name"]
-    description = data["description"]
-    price = float(data["price"])
-    GameRepository(get_connection()).insert_game(name, description, price)
+    game = create_game(data)
+    GameRepository(get_connection()).insert_game(game)
     return redirect("/games")
 
 
@@ -45,12 +44,8 @@ def save_game():
 @cross_origin()
 def update(id):
     data = request.get_json()
-    GameRepository(get_connection()).update_game(
-        id=id,
-        name=data["name"],
-        description=data["description"],
-        price=float(data["price"]),
-    )
+    updated_game = create_game(data)
+    GameRepository(get_connection()).update_game(updated_game)
     return redirect("/games")
 
 

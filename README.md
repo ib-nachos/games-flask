@@ -14,9 +14,9 @@ This project runs a full API REST connected to a MySQL using Docker-compose.
 # Models
 
 **Games model**
-| #id   | #name | #description | #price |
-| :---: | :---: | :---: | :---: |
-| integer   | varchar  | varchar   | decimal   |
+| #id     | #title  | #category | #description | #price  |
+| :---:   | :---:   | :---:     | :---:        | :---:   |
+| integer | varchar | varchar   | varchar      | decimal |
 
 
 # API endpoints
@@ -24,33 +24,29 @@ This project runs a full API REST connected to a MySQL using Docker-compose.
 The allowed methods are:
  - GET -> `/games` or `games/<game_id>`
  ```json
- [GET] /games
+ [GET] /games/1
  Response
  {
-    "games": [
-        [
-            1,
-            "Counter Strike",
-            "Shooter",
-            "64.99"
-        ],
-        [
-            2,
-            "Assassins Creed I",
-            "Altair history",
-            "32.99"
-        ]
-    ]
-}
+   "games": [
+     {
+       "category": "Shooter",
+       "description": "Call of Duty is a first-person shooter video game franchise published by Activision.",
+       "id": 2,
+       "price": "64.99",
+       "title": "Call of Duty"
+     }
+   ]
+ }
  ```
  - POST -> `/save_game`
  ```json
  [POST] /save_game/
  Body
  {
-        "name": "Rubik",
-        "description": "Magic cube",
-        "price": "7.99"
+     "title": "Counter Strike"
+      "category": "Shooter",
+      "description": "Counter-Strike is a series of multiplayer tactical first-person shooter video games in which teams of terrorists battle to perpetrate an act of terror while counter-terrorists try to prevent it.",
+      "price": "64.99"
  }
  ```
  - PUT -> `/update_game/<id>`
@@ -58,8 +54,9 @@ The allowed methods are:
  [PUT] /update_game/2
  Body
  {
-        "name": "Assassins Creed I",
-        "description": "Altair history",
+        "title": "Counter Strike",
+        "category": "Shooter",
+        "description": "A game with a lot of shoots",
         "price": "40.99"
  }
  ```
@@ -96,8 +93,8 @@ You should see 3 process running
 ```bash
 CONTAINER ID   IMAGE                   COMMAND                  CREATED        STATUS         PORTS                                                  NAMES
 3d178931d951   phpmyadmin/phpmyadmin   "/docker-entrypoint.…"   19 hours ago   Up 5 seconds   0.0.0.0:8080->80/tcp, :::8080->80/tcp                  flask_db_admin_1
-0267919a7478   flask_app               "python app.py"          19 hours ago   Up 6 seconds   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp              flask_app_1
-9817ba23ec46   mysql                   "docker-entrypoint.s…"   19 hours ago   Up 6 seconds   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp   flask_db_1
+0267919a7478   games-flask_app               "python app.py"          19 hours ago   Up 6 seconds   0.0.0.0:5000->5000/tcp, :::5000->5000/tcp              games-flask_app_1
+9817ba23ec46   mysql                   "docker-entrypoint.s…"   19 hours ago   Up 6 seconds   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp   games-flask_app_db_1
 ```
 
 ## Successful
@@ -117,17 +114,19 @@ There is an admin panel running in the 8080 PORT.
 ```SQL
 CREATE TABLE games(
     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    description VARCHAR(255) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    description VARCHAR(500) NOT NULL,
     price DECIMAL(9,2) NOT NULL
 );
 ```
 5. (Optional) in case you want to add initial data execute this sentence
 ```SQL
-INSERT INTO games(name, description, price)
+INSERT INTO games(title, category, description, price)
 VALUES 
-    ("Counter Strike", "Shooter", 64.99),
-    ("Assassins Creed I", "Altair history", 32.99);
+    ("Counter Strike", "Shooter", "Counter-Strike is a series of multiplayer tactical first-person shooter video games in which teams of terrorists battle to perpetrate an act of terror while counter-terrorists try to prevent it.", 64.99),
+    ("Call of Duty", "Shooter", "Call of Duty is a first-person shooter video game franchise published by Activision.", 64.99),
+    ("Assassins Creed I", "Action", "Assassin's Creed is an action-adventure game developed by Ubisoft Montreal and published by Ubisoft. It is the first installment in the Assassin's Creed series.", 32.99);
 ```
 
 
